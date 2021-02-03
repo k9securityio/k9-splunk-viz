@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+
+  splunk:
+    image: splunk/splunk:8.0.4.1-debian
+    ports:
+      - "8000:8000"
+    environment:
+      SPLUNK_START_ARGS: '--accept-license'
+      SPLUNK_PASSWORD: 'sR8xEv&Z6Zu3OHWgkk%!YM'
+    volumes:
+      - "${PWD}/local-indexes.conf:/opt/splunk/etc/system/local/indexes.conf"
