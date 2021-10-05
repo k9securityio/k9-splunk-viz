@@ -1,0 +1,2 @@
+# convenient alias for sync'ing reports to local directory; replace CUSTOMER-K9SECURITY-INBOX and CNNNNNN with your own bucket and k9 customer id
+alias sync-k9security-inbox='/usr/local/bin/aws s3 sync --delete s3://CUSTOMER-K9SECURITY-INBOX/customers/CNNNNNN/ ~/tmp/k9security-inbox/'
