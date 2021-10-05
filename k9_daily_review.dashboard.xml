@@ -1,0 +1,145 @@
+<form>
+  <label>k9 Security - AWS Access Review</label>
+  <fieldset submitButton="false">
+    <input type="time" token="timeRange" searchWhenChanged="true">
+      <label>Time Range</label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="aws_account_id" searchWhenChanged="true">
+      <label>AWS Account</label>
+      <fieldForLabel>AWS Account ID</fieldForLabel>
+      <fieldForValue>aws_account_id</fieldForValue>
+      <search>
+        <query>index="k9_security"
+  source="*_principal-access-summaries.*.csv"
+  *
+  | eval fields=split(principal_arn, ":") | eval aws_account_id=mvindex(fields,4) | dedup aws_account_id | sort aws_account_id | table aws_account_id</query>
+        <earliest>-1w@w</earliest>
+        <latest>now</latest>
+      </search>
+      <choice value="">All Accounts</choice>
+      <default></default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <single>
+        <title>Count of IAM Administrators</title>
+        <search>
+          <query>index="k9_security"
+  service_name=IAM access_capability=administer-resource
+  | where principal_arn like "arn:aws:iam::$aws_account_id$%"
+  | sort principal_arn
+  | dedup principal_arn
+  | timechart span=1d count(principal_arn)</query>
+          <earliest>$timeRange.earliest$</earliest>
+          <latest>$timeRange.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </single>
+    </panel>
+    <panel>
+      <table>
+        <title>IAM Administrators</title>
+        <search>
+          <query>index="k9_security"
+  service_name=IAM access_capability=administer-resource
+  | where principal_arn like "arn:aws:iam::$aws_account_id$%"
+  | sort principal_arn | dedup principal_arn | table principal_arn</query>
+          <earliest>$timeRange.earliest$</earliest>
+          <latest>$timeRange.latest$</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="rowNumbers">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>Count of Unused IAM Principals</title>
+        <search>
+          <query>index="k9_security"
+  source="*principals.*.csv"
+  | where principal_arn like "arn:aws:iam::$aws_account_id$%"
+  | where isnull('principal_last_used')
+  | dedup principal_arn
+  | timechart span=1d count(principal_arn)</query>
+          <earliest>$timeRange.earliest$</earliest>
+          <latest>$timeRange.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </single>
+    </panel>
+    <panel>
+      <table>
+        <title>Unused IAM Principals</title>
+        <search>
+          <query>index="k9_security"
+  source="*principals.*.csv"
+  | where principal_arn like "arn:aws:iam::$aws_account_id$%"
+  | where isnull('principal_last_used')
+  | dedup principal_arn
+  | table principal_arn</query>
+          <earliest>$timeRange.earliest$</earliest>
+          <latest>$timeRange.latest$</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="rowNumbers">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>KMS Encryption Key Access</title>
+        <search>
+          <query>index="k9_security"
+  service_name=KMS
+  resource_arn="*"
+  source="*resource-access-summaries.*.csv"
+  | where principal_arn like "arn:aws:iam::$aws_account_id$%"
+  | dedup resource_name, resource_arn, access_capability, principal_name
+  | sort resource_name, resource_arn, access_capability, principal_name
+  | table resource_name, resource_arn, access_capability, principal_name</query>
+          <earliest>$timeRange.earliest$</earliest>
+          <latest>$timeRange.latest$</latest>
+        </search>
+        <option name="drilldown">row</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="totalsRow">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>S3 Bucket Access by Confidentiality</title>
+        <search>
+          <query>index="k9_security"
+  service_name="S3"
+  resource_arn="*"
+  source="*resource-access-summaries.*.csv"
+  ```| where resource_arn like "%qm-sandbox-cm-%"```
+  | where principal_arn like "arn:aws:iam::$aws_account_id$%"
+  | join resource_arn [SEARCH index="k9_security" source="*_resources.*.csv" resource_type="S3Bucket" | FIELDS resource_arn, resource_tag_confidentiality]
+  | where isnotnull(resource_tag_confidentiality)
+  | dedup resource_name, resource_arn, access_capability, principal_name
+  | sort resource_name, resource_arn, resource_tag_confidentiality, access_capability, principal_name,
+  | table resource_name, resource_tag_confidentiality,  access_capability, principal_name</query>
+          <earliest>$timeRange.earliest$</earliest>
+          <latest>$timeRange.latest$</latest>
+        </search>
+        <option name="drilldown">row</option>
+        <option name="totalsRow">true</option>
+      </table>
+    </panel>
+  </row>
+</form>
