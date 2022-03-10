@@ -18,6 +18,10 @@ done;
 
 popd
 
+splunk_container_name="splunk-integration-splunk-1"
+
+docker container exec --user root "${splunk_container_name}" mkdir -p "${splunk_input_dir}"
+
 echo "copying staged files to ${splunk_input_dir}"
-docker cp "${stage_dir}/" "splunk-integration_splunk_1:${splunk_input_dir}"
+docker cp "${stage_dir}/" "${splunk_container_name}:${splunk_input_dir}"
 echo "done ;)"
