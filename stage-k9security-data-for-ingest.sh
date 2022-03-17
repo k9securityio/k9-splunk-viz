@@ -18,7 +18,7 @@ done;
 
 popd
 
-splunk_container_name="splunk-integration-splunk-1"
+splunk_container_name="splunk-integration_splunk_1"
 
 docker container exec --user root "${splunk_container_name}" mkdir -p "${splunk_input_dir}"
 
