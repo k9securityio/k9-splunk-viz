@@ -21,7 +21,7 @@ with `cp` to your own spool directory.
 
 Then you will need to configure several entities in Splunk:
 
-###`k9_security_analysis:csv` Source Type
+### `k9_security_analysis:csv` Source Type
 
 Define the `k9_security_analysis:csv` Source Type:
 
