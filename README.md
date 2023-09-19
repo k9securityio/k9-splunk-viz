@@ -21,9 +21,9 @@ with `cp` to your own spool directory.
 
 Then you will need to configure several entities in Splunk:
 
-### `k9_security_analysis:csv` Source Type
+### `k9_security_analysis_v1:csv` Source Type
 
-Define the `k9_security_analysis:csv` Source Type:
+Define the `k9_security_analysis_v1:csv` Source Type:
 
 ```ini
 [k9_security_analysis:csv]
@@ -54,15 +54,20 @@ enableDataIntegrityControl = 0
 enableTsidxReduction = 0
 ```
 
-### Directory Monitoring Input 
-Define a directory monitoring input using the previously-defined index and sourcetype, e.g.:
+### Data Manager Input for monitoring Secure Inbox S3 bucket (preferred)
+If you are using Splunk Cloud, then schedule a time to integrate your data with k9 Security Support (support@k9security.io).
+
+Docs for configuring an S3 bucket input for the secure inbox coming soon.
+
+### Directory Monitoring Input
+If you are hosting Splunk yourself, then define a directory monitoring input using the previously-defined index and sourcetype, e.g.:
 
 ```ini 
 [monitor:///var/local/splunk-inputs/k9security]
 disabled = false
 host = k9-security
 index = k9_security
-sourcetype = k9_security_analysis:csv
+sourcetype = k9_security_analysis_v1:csv
 ```
 
 ### k9 Daily Review Dashboard
