@@ -26,7 +26,7 @@ Then you will need to configure several entities in Splunk:
 Define the `k9_security_analysis_v1:csv` Source Type:
 
 ```ini
-[k9_security_analysis:csv]
+[k9_security_analysis_v1:csv]
 BREAK_ONLY_BEFORE_DATE =
 DATETIME_CONFIG =
 INDEXED_EXTRACTIONS = csv
