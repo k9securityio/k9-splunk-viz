@@ -1,4 +1,4 @@
-<form>
+<dashboard version="1.1" theme="light">
   <label>k9 Security - AWS Access Review</label>
   <fieldset submitButton="false">
     <input type="time" token="timeRange" searchWhenChanged="true">
@@ -142,4 +142,4 @@
       </table>
     </panel>
   </row>
-</form>
+</dashboard>
