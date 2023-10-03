@@ -68,15 +68,15 @@ parameters, please update to the latest report-delivery CloudFormation template,
 Your parameters should look like:
 ![Configure notifications for latest reports](assets/k9-report-delivery-params.notify-latest-reports.png)
 
-Second, deploy the stack.  The stack will create an SNS topic and SQS queue, both named `notify-k9-reports-s3-events` per Splunk's architecture.
+Second, deploy the stack.  The stack will create an SNS topic and SQS queue, both named `notify-k9-reports-s3-events`, per Splunk's architecture.
 
-Third, ensure the IAM user or role used by Splunk Cloud for this Input has the permissions described [Configure AWS permissions for SQS access](https://docs.splunk.com/Documentation/AddOns/released/AWS/SQS-basedS3#Configure_AWS_permissions_for_SQS_access) in the Splunk SQS integration documentation.
+Third, ensure the IAM user or role used by Splunk Cloud for this Input has the permissions described in the Splunk [configure AWS permissions for SQS access](https://docs.splunk.com/Documentation/AddOns/released/AWS/SQS-basedS3#Configure_AWS_permissions_for_SQS_access) section of the SQS integration documentation.
 
 Fourth, configure a data input for the `notify-k9-reports-s3-events` queue.
 
 Fifth, test the integration by downloading one of the latest csv files from your S3 bucket then uploading it back to the same directory.  You should see a message queued in the `notify-k9-reports-s3-events` queue.
 
-Now you can proceed to creating the k9 Daily Review Dashboard.
+Now you can proceed to creating the [k9 Daily Review Dashboard](#k9-daily-review-dashboard).
 
 ### Directory Monitoring Input
 If you are hosting Splunk yourself, then define a directory monitoring input using the previously-defined index and sourcetype, e.g.:
