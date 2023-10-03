@@ -54,10 +54,29 @@ enableDataIntegrityControl = 0
 enableTsidxReduction = 0
 ```
 
-### Data Manager Input for monitoring Secure Inbox S3 bucket (preferred)
-If you are using Splunk Cloud, then schedule a time to integrate your data with k9 Security Support (support@k9security.io).
+### Splunk for AWS Input for monitoring Secure Inbox S3 bucket (preferred)
+If you are using Splunk Cloud, then you will need to configure a data input for in the Splunk for AWS add-on.
+k9 Security recommends and supports the [Splunk SQS-based S3 input](https://docs.splunk.com/Documentation/AddOns/released/AWS/SQS-basedS3) approach.
+At the time of writing, the Splunk Data Manager does support custom S3 input sources.
 
-Docs for configuring an S3 bucket input for the secure inbox coming soon.
+First, enable delivery and notification of the 'latest' reports by setting the `LatestReportsEnabled` and 
+`NotifyReportCreationEvents` parameters to `yes` in your `k9-report-delivery` stack.  If you are missing either of these
+parameters, please update to the latest report-delivery CloudFormation template, which is always available at:
+
+  [https://k9-customer-tools.s3.amazonaws.com/configure-k9-resources-for-report-delivery.template](https://k9-customer-tools.s3.amazonaws.com/configure-k9-resources-for-report-delivery.template)
+
+Your parameters should look like:
+![Configure notifications for latest reports](assets/k9-report-delivery-params.notify-latest-reports.png)
+
+Second, deploy the stack.  The stack will create an SNS topic and SQS queue, both named `notify-k9-reports-s3-events` per Splunk's architecture.
+
+Third, ensure the IAM user or role used by Splunk Cloud for this Input has the permissions described [Configure AWS permissions for SQS access](https://docs.splunk.com/Documentation/AddOns/released/AWS/SQS-basedS3#Configure_AWS_permissions_for_SQS_access) in the Splunk SQS integration documentation.
+
+Fourth, configure a data input for the `notify-k9-reports-s3-events` queue.
+
+Fifth, test the integration by downloading one of the latest csv files from your S3 bucket then uploading it back to the same directory.  You should see a message queued in the `notify-k9-reports-s3-events` queue.
+
+Now you can proceed to creating the k9 Daily Review Dashboard.
 
 ### Directory Monitoring Input
 If you are hosting Splunk yourself, then define a directory monitoring input using the previously-defined index and sourcetype, e.g.:
