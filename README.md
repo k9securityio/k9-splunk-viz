@@ -78,6 +78,20 @@ Fifth, test the integration by downloading one of the latest csv files from your
 
 Now you can proceed to creating the [k9 Daily Review Dashboard](#k9-daily-review-dashboard).
 
+### Custom Data in S3 Input
+If you use Splunk Cloud, then define a 'Custom Data Type' Data Input for S3 with notifications sent via SQS (`Create New Input > Custom Data Type > SQS-based S3`).
+
+Configure the S3 SQS Data Input with:
+
+* AWS user: `<a Splunk user with access to the report delivery account>`
+* Region: `us-east-1`
+* Queue name: `notify-k9-reports-s3-events`
+* Source type: `k9_security_analysis_v1:csv` 
+* Advanced settings:
+  * CSV: yes (checked) 
+
+You should be able to use default values for other settings. 
+
 ### Directory Monitoring Input
 If you are hosting Splunk yourself, then define a directory monitoring input using the previously-defined index and sourcetype, e.g.:
 
