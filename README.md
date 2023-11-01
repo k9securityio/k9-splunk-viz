@@ -118,3 +118,26 @@ Now populate the `k9_security` index with k9 csv report data.
 2. Load `k9security.bash` into your shell with `source k9security.bash`
 3. Execute `sync-k9security-inbox` in your shell; this command synchronizes reports in s3 `~/tmp/k9security-inbox/` with `aws sync`
 4. Execute `./stage-k9security-data-for-ingest.sh`
+
+## Splunk queries to support AWS IAM SecOps
+
+The following queries will help you build an AWS IAM access governance and SecOps program using k9 Security & Splunk. 
+
+### Find unused IAM principals
+To review the unused IAM principals ([Kata 2](https://www.k9security.io/docs/katas/kata-2-review-unused-iam-principals/)) in Splunk, you can use the following query:
+
+```
+index="k9_security" source="*principals.latest.csv" principal_last_used=*
+  | eval principal_last_used_dt=strptime(principal_last_used, "%Y-%m-%d %H:%M:%S")  
+  | where principal_last_used_dt <= relative_time(now(), "-90d@d")
+  | sort +principal_last_used_dt
+  | table principal_arn principal_last_used
+```
+
+The query:
+
+1. finds all principals that have a principal_last_used date
+2. converts the principal_last_used string into Unix time
+3. filters to principals that were last used 90 days ago
+4. sorts by 'most unused' principal first
+5. presents the data in a table
