@@ -123,7 +123,7 @@ Now populate the `k9_security` index with k9 csv report data.
 
 The following queries will help you build an AWS IAM access governance and SecOps program using k9 Security & Splunk. 
 
-### Find unused IAM principals
+### Find stale unused IAM principals
 To review the unused IAM principals ([Kata 2](https://www.k9security.io/docs/katas/kata-2-review-unused-iam-principals/)) in Splunk, you can use the following query:
 
 ```
@@ -137,9 +137,30 @@ index="k9_security" source="*principals.latest.csv"
 
 The query:
 
-1. scan all principals in the principals.latest.csv file
-2. converts the principal_last_used string into Unix time, `principal_last_used_dt`
+1. scans all principals in the principals.latest.csv file
+2. converts the `principal_last_used` string into Unix time, `principal_last_used_dt`
 3. use the value of `principal_last_used` to determine whether the principal was _never used_
 4. filters to principals that were never used or last used more than 90 days ago
 5. sorts list by most-recently used principal first
 6. presents the data in a table
+
+### Find stale AWS user credentials
+To review AWS IAM credentials ([Kata 3](https://www.k9security.io/docs/katas/kata-3-review-iam-password-and-access-key-credentials/)) for stale IAM user passwords or AWS API keys in Splunk, you can use the following query:
+
+```
+index="k9_security" source="*principals.latest.csv"
+  | eval password_last_rotated_dt=strptime(password_last_rotated, "%Y-%m-%d %H:%M:%S")
+  | eval access_key_1_last_rotated_dt=strptime(access_key_1_last_rotated, "%Y-%m-%d %H:%M:%S")
+  | eval access_key_2_last_rotated_dt=strptime(access_key_2_last_rotated, "%Y-%m-%d %H:%M:%S")
+  | eval rotation_threshold_dt=relative_time(now(), "-61d@d")
+  | where password_last_rotated_dt <= rotation_threshold_dt OR access_key_1_last_rotated_dt <= rotation_threshold_dt OR access_key_2_last_rotated_dt <= rotation_threshold_dt
+  | sort -access_key_1_last_rotated_dt
+  | table principal_arn password_last_rotated password_state access_key_1_last_rotated access_key_1_state access_key_2_last_rotated access_key_2_state
+```
+
+The query:
+1. scans all principals in the principals.latest.csv file
+2. converts the `password_last_rotated`, `access_key_1_last_rotated`, & `access_key_2_last_rotated` fields from strings into Unix time
+3. defines a `rotation_threshold_dt` of 61 days ago
+4. filters for principals that have a password or access key credential that needs rotation
+5. presents principals who have a credential that needs rotation in a table with the last rotation date and state of that credential 
