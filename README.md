@@ -127,17 +127,19 @@ The following queries will help you build an AWS IAM access governance and SecOp
 To review the unused IAM principals ([Kata 2](https://www.k9security.io/docs/katas/kata-2-review-unused-iam-principals/)) in Splunk, you can use the following query:
 
 ```
-index="k9_security" source="*principals.latest.csv" principal_last_used=*
-  | eval principal_last_used_dt=strptime(principal_last_used, "%Y-%m-%d %H:%M:%S")  
-  | where principal_last_used_dt <= relative_time(now(), "-90d@d")
-  | sort +principal_last_used_dt
+index="k9_security" source="*principals.latest.csv"
+  | eval principal_last_used_dt=strptime(principal_last_used, "%Y-%m-%d %H:%M:%S")
+  | eval principal_never_used=if( (principal_last_used="" OR isnull(principal_last_used)), 1, 0)
+  | where principal_never_used == 1 OR principal_last_used_dt <= relative_time(now(), "-90d@d")
+  | sort -principal_last_used_dt
   | table principal_arn principal_last_used
 ```
 
 The query:
 
-1. finds all principals that have a principal_last_used date
-2. converts the principal_last_used string into Unix time
-3. filters to principals that were last used 90 days ago
-4. sorts by 'most unused' principal first
-5. presents the data in a table
+1. scan all principals in the principals.latest.csv file
+2. converts the principal_last_used string into Unix time, `principal_last_used_dt`
+3. use the value of `principal_last_used` to determine whether the principal was _never used_
+4. filters to principals that were never used or last used more than 90 days ago
+5. sorts list by most-recently used principal first
+6. presents the data in a table
