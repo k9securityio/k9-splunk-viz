@@ -21,6 +21,9 @@ with `cp` to your own spool directory.
 
 Then you will need to configure several entities in Splunk:
 
+## Set-up Splunk
+Set-up Splunk with a source type, index, data input(s), and dashboard. 
+
 ### `k9_security_analysis_v1:csv` Source Type
 
 Define the `k9_security_analysis_v1:csv` Source Type:
