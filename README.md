@@ -144,7 +144,7 @@ The query:
 To review the unused IAM principals ([Kata 2](https://www.k9security.io/docs/katas/kata-2-review-unused-iam-principals/)) in Splunk, you can use the following query:
 
 ```
-index="k9_security" source="*principals.latest.csv"
+index="k9_security" source="*principals.latest.csv" earliest=-1d latest=now
   | eval principal_last_used_dt=strptime(principal_last_used, "%Y-%m-%d %H:%M:%S")
   | eval principal_never_used=if( (principal_last_used="" OR isnull(principal_last_used)), 1, 0)
   | where principal_never_used == 1 OR principal_last_used_dt <= relative_time(now(), "-90d@d")
@@ -154,7 +154,7 @@ index="k9_security" source="*principals.latest.csv"
 
 The query:
 
-1. scans all principals in the principals.latest.csv file
+1. scans all principals in the principals.latest.csv files from the last day
 2. converts the `principal_last_used` string into Unix time, `principal_last_used_dt`
 3. use the value of `principal_last_used` to determine whether the principal was _never used_
 4. filters to principals that were never used or last used more than 90 days ago
@@ -165,7 +165,7 @@ The query:
 To review AWS IAM credentials ([Kata 3](https://www.k9security.io/docs/katas/kata-3-review-iam-password-and-access-key-credentials/)) for stale IAM user passwords or AWS API keys in Splunk, you can use the following query:
 
 ```
-index="k9_security" source="*principals.latest.csv"
+index="k9_security" source="*principals.latest.csv" earliest=-1d latest=now
   | eval password_last_rotated_dt=strptime(password_last_rotated, "%Y-%m-%d %H:%M:%S")
   | eval access_key_1_last_rotated_dt=strptime(access_key_1_last_rotated, "%Y-%m-%d %H:%M:%S")
   | eval access_key_2_last_rotated_dt=strptime(access_key_2_last_rotated, "%Y-%m-%d %H:%M:%S")
@@ -176,7 +176,7 @@ index="k9_security" source="*principals.latest.csv"
 ```
 
 The query:
-1. scans all principals in the principals.latest.csv file
+1. scans all principals in the principals.latest.csv file from the last day
 2. converts the `password_last_rotated`, `access_key_1_last_rotated`, & `access_key_2_last_rotated` fields from strings into Unix time
 3. defines a `rotation_threshold_dt` of 61 days ago
 4. filters for principals that have a password or access key credential that needs rotation
