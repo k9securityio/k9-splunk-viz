@@ -141,6 +141,9 @@ The query:
 4. presents the data in a table
 
 ### Find stale unused IAM principals
+
+![Find unused IAM principals](assets/k9security.splunk-find-unused-iam-principals.png)
+
 To review the unused IAM principals ([Kata 2](https://www.k9security.io/docs/katas/kata-2-review-unused-iam-principals/)) in Splunk, you can use the following query:
 
 ```
@@ -162,6 +165,9 @@ The query:
 6. presents the data in a table
 
 ### Find stale AWS user credentials
+
+![Find stale AWS IAM user credentials](assets/k9security.splunk-find-stale-aws-user-credentials.png)
+
 To review AWS IAM credentials ([Kata 3](https://www.k9security.io/docs/katas/kata-3-review-iam-password-and-access-key-credentials/)) for stale IAM user passwords or AWS API keys in Splunk, you can use the following query:
 
 ```
