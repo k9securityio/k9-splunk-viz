@@ -127,7 +127,7 @@ The following queries will help you build an AWS IAM access governance and SecOp
 
 ![Review new IAM Admins](assets/k9security.splunk-review-new-iam-admins.png)
 
-To review the new IAM admins [Kata 1]() in Splunk, you can use the following query:
+To review the new IAM admins [Kata 1](https://www.k9security.io/docs/katas/kata-1-review-aws-iam-administrators/) in Splunk, you can use the following query:
 ```
 index="k9_security" source="*principals.latest.csv" principal_is_iam_admin=True earliest=-1d latest=now
 NOT [ search index="k9_security" source="*principals.latest.csv" principal_is_iam_admin=True earliest=-2d latest=-1d | fields principal_arn]
