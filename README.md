@@ -129,9 +129,10 @@ The following queries will help you build an AWS IAM access governance and SecOp
 
 To review the new IAM admins [Kata 1](https://www.k9security.io/docs/katas/kata-1-review-aws-iam-administrators/) in Splunk, you can use the following query:
 ```
-index="k9_security" source="*principals.latest.csv" principal_is_iam_admin=True earliest=-1d latest=now
-NOT [ search index="k9_security" source="*principals.latest.csv" principal_is_iam_admin=True earliest=-2d latest=-1d | fields principal_arn]
-|  table principal_arn
+index="k9_security" source="*principals.latest.csv" principal_is_iam_admin="True" earliest=-1d latest=now
+  NOT [ search index="k9_security" source="*principals.latest.csv" principal_is_iam_admin=True earliest=-2d latest=-1d | fields principal_arn]
+  | dedup
+  | table principal_arn
 ```
 
 The query:
@@ -151,6 +152,7 @@ index="k9_security" source="*principals.latest.csv" earliest=-1d latest=now
   | eval principal_last_used_dt=strptime(principal_last_used, "%Y-%m-%d %H:%M:%S")
   | eval principal_never_used=if( (principal_last_used="" OR isnull(principal_last_used)), 1, 0)
   | where principal_never_used == 1 OR principal_last_used_dt <= relative_time(now(), "-90d@d")
+  | dedup principal_arn
   | sort -principal_last_used_dt
   | table principal_arn principal_last_used
 ```
@@ -177,6 +179,7 @@ index="k9_security" source="*principals.latest.csv" earliest=-1d latest=now
   | eval access_key_2_last_rotated_dt=strptime(access_key_2_last_rotated, "%Y-%m-%d %H:%M:%S")
   | eval rotation_threshold_dt=relative_time(now(), "-61d@d")
   | where password_last_rotated_dt <= rotation_threshold_dt OR access_key_1_last_rotated_dt <= rotation_threshold_dt OR access_key_2_last_rotated_dt <= rotation_threshold_dt
+  | dedup principal_arn
   | sort -access_key_1_last_rotated_dt
   | table principal_arn password_last_rotated password_state access_key_1_last_rotated access_key_1_state access_key_2_last_rotated access_key_2_state
 ```
