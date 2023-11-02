@@ -131,7 +131,7 @@ To review the new IAM admins [Kata 1](https://www.k9security.io/docs/katas/kata-
 ```
 index="k9_security" source="*principals.latest.csv" principal_is_iam_admin="True" earliest=-1d latest=now
   NOT [ search index="k9_security" source="*principals.latest.csv" principal_is_iam_admin=True earliest=-2d latest=-1d | fields principal_arn]
-  | dedup
+  | dedup principal_arn
   | table principal_arn
 ```
 
