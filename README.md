@@ -89,7 +89,8 @@ Configure the S3 SQS Data Input with:
 * AWS user: `<a Splunk user with access to the report delivery account>`
 * Region: `us-east-1`
 * Queue name: `notify-k9-reports-s3-events`
-* Source type: `k9_security_analysis_v1:csv` 
+* Source type: `k9_security_analysis_v1:csv`
+* Index: `k9_security`
 * Advanced settings:
   * CSV: yes (checked) 
 
