@@ -159,7 +159,7 @@ The query:
 3. removes the previous days IAM admins from the current list of admins
 4. presents the data in a table
 
-### Find stale unused IAM principals
+### Find unused IAM principals
 
 ![Find unused IAM principals](assets/k9security.splunk-find-unused-iam-principals.png)
 
