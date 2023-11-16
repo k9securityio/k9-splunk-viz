@@ -124,11 +124,28 @@ Now populate the `k9_security` index with k9 csv report data.
 
 The following queries will help you build an AWS IAM access governance and SecOps program using k9 Security & Splunk.
 
+### Review current admins
+
+![Review current IAM Admins](assets/k9security.splunk-review-current-iam-admins.png)
+
+To review all the current IAM admins [Kata 1](https://www.k9security.io/docs/katas/kata-1-review-aws-iam-administrators/) in Splunk, you can use the following query:
+
+```
+index="k9_security" source="*principals.latest.csv" principal_is_iam_admin="True" earliest=-1d latest=now
+  | dedup principal_arn
+  | sort principal_arn
+  | table principal_arn
+```
+
+The query:
+1. identifies the current IAM admins observed from now through 1 day ago
+2. presents the data in a table
+
 ### Find new IAM admins
 
 ![Review new IAM Admins](assets/k9security.splunk-review-new-iam-admins.png)
 
-To review the new IAM admins [Kata 1](https://www.k9security.io/docs/katas/kata-1-review-aws-iam-administrators/) in Splunk, you can use the following query:
+To review the _new_ IAM admins [Kata 1](https://www.k9security.io/docs/katas/kata-1-review-aws-iam-administrators/) created in the past day in Splunk, you can use the following query:
 ```
 index="k9_security" source="*principals.latest.csv" principal_is_iam_admin="True" earliest=-1d latest=now
   NOT [ search index="k9_security" source="*principals.latest.csv" principal_is_iam_admin=True earliest=-2d latest=-1d | fields principal_arn]
